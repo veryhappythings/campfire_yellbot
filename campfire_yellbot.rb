@@ -1,27 +1,39 @@
+require 'rubygems'
+
+require 'yaml'
 require 'broach'
 require 'twitter/json_stream'
 
+
+CONFIG = YAML.load_file('campfire_yellbot.yml')
+REPLIES = YAML.load_file('campfire_yellbot_replies.yml')
+
 def reply!(room, message)
   case message
-    when /^rage$/
-      room.speak('ffffffffuuuuuuuuu')
+#when /^rage$/ then room.speak "FFFFFUUUUU"
+    when /^rage$/ then respond(room, 'rage')
+    when /^ewbte$/ then respond(room, 'ewbte')
+  end
+end
+def respond(room, match)
+  room.speak(REPLIES[match]['message'].to_s)
+  if REPLIES[match].include? 'image'
+    room.speak(REPLIES[match]['image'])
   end
 end
 
-config = YAML.load_file('campfire_yellbot.yml')
-
 options = {
-  :path => "/room/#{config['room_id']}/live.json",
+  :path => "/room/#{CONFIG['room_id']}/live.json",
   :host => 'streaming.campfirenow.com',
-  :auth => "#{config['listen_token']}:x"
+  :auth => "#{CONFIG['listen_token']}:x"
 }
 
 Broach.settings = {
-  'account' => config['account'],
-  'token'   => config['speak_token'],
+  'account' => CONFIG['account'],
+  'token'   => CONFIG['speak_token'],
   'use_ssl' => false
 }
-room = Broach::Room.find config['room_id']
+room = Broach::Room.find CONFIG['room_id']
 
 EventMachine::run do
   stream = Twitter::JSONStream.connect(options)
@@ -33,6 +45,7 @@ EventMachine::run do
   end
 
   stream.on_error do |message|
+    puts message
     puts "ERROR:#{message.inspect}"
   end
 
