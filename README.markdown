@@ -13,9 +13,12 @@ It'll need a listen token, which needs to be someone in the room, and a speaking
 
 # Configuration
 
+1. cp config.yml.example config.yml
+2. cp replies.yml.example replies.yml
+
 Edit the config files (duh).
 
-Configure your replies in `campfire_yellbot_replies` using this format:
+Configure your replies in `replies.yml` using this format:
 
     match:
       message: your message
