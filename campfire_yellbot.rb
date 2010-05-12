@@ -5,8 +5,8 @@ require 'broach'
 require 'twitter/json_stream'
 
 
-CONFIG = YAML.load_file('campfire_yellbot.yml')
-REPLIES = YAML.load_file('campfire_yellbot_replies.yml')
+CONFIG = YAML.load_file('config.yml')
+REPLIES = YAML.load_file('replies.yml')
 
 def reply!(room, message)
   case message
