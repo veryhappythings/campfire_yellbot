@@ -1,8 +1,6 @@
 # Yellbot
 Is your campfire room not cluttered enough?  Use yellbot to annoy all your co-workers.
 
-It'll need a listen token, which needs to be someone in the room, and a speaking token, which is whoever you want to say things.  It'll need a room id too, and it'll need to know your account.  Use the config file for that.
-
 # Get started
 
 1. clone it
