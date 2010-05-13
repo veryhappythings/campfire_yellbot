@@ -1,5 +1,9 @@
 rage:
-  message: FFFFFFUUUUUUU
+  regex: '^rage$'
+  message:
+    - FFFFFFUUUUUUU
 ewbte:
-  message: Everything Went Better Than Expected
-  image: http://example.com/ewbte.png
+  regex: '^ewbte$'
+  message:
+    - Everything Went Better Than Expected
+    - http://example.com/ewbte.png
