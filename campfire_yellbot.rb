@@ -51,7 +51,7 @@ options = {
 Broach.settings = {
   'account' => CONFIG['account'],
   'token'   => CONFIG['token'],
-  'use_ssl' => false
+  'use_ssl' => true
 }
 room = Broach::Room.find CONFIG['room_id']
 
