@@ -30,7 +30,7 @@ REPLIES = YAML.load_file('replies.yml')
 
 def reply!(room, message)
   REPLIES.each_pair do |name, reply|
-    if Regexp.new(reply['regex']).match(message)
+    if Regexp.new(reply['regex'], Regexp::IGNORECASE).match(message)
       respond(room, reply)
     end
   end
