@@ -28,6 +28,18 @@ end
 CONFIG = YAML.load_file('config.yml')
 REPLIES = YAML.load_file('replies.yml')
 
+SCORE = {
+  'started' => Time.now,
+  'wtf' => 0,
+  'facepalm' =>0
+}
+def update_score message, room
+  wat = message.downcase.match /^(wtf|facepalm)/i
+  unless wat.nil?
+    SCORE[wat.to_s] += 1
+    room.speak "Since #{SCORE['started']} -> WTFs: #{SCORE['wtf']}, facepalms: #{SCORE['facepalm']}"
+  end
+end
 def reply!(room, message)
   REPLIES.each_pair do |name, reply|
     if Regexp.new(reply['regex'], Regexp::IGNORECASE).match(message)
@@ -64,6 +76,7 @@ EventMachine::run do
     puts item
     item = JSON.parse(item)
     reply! room, item['body']
+    update_score room, item['body']
   end
 
   stream.on_error do |message|
