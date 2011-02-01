@@ -26,13 +26,26 @@ module Broach
 end
 
 CONFIG = YAML.load_file('config.yml')
-REPLIES = YAML.load_file('replies.yml')
+$replies = YAML.load_file('replies.yml')
 
 SCORE = {
   'started' => Time.now,
   'wtf' => 0,
   'facepalm' =>0
 }
+
+def reload! room, message
+  return if message.nil? or not message.is_a? String
+  unless message.match(/^RELOAD!/).nil?
+    begin
+      $replies = YAML.load_file('replies.yml')
+      room.speak "RELOADED TEH $replies file"
+    rescue
+      room.speak "CANT RELOAD, file BORKED"
+    end
+  end
+end
+
 def update_score  room, message
   return if message.nil? or not message.is_a? String
   wat = message.match /^(wtf|facepalm)/i
@@ -42,7 +55,7 @@ def update_score  room, message
   end
 end
 def reply!(room, message)
-  REPLIES.each_pair do |name, reply|
+  $replies.each_pair do |name, reply|
     if Regexp.new(reply['regex'], Regexp::IGNORECASE).match(message)
       respond(room, reply)
     end
@@ -75,9 +88,16 @@ EventMachine::run do
 
   stream.each_item do |item|
     puts item
-    item = JSON.parse(item)
-    reply! room, item['body']
-    update_score room, item['body']
+    begin
+      body = JSON.parse(item)['body']
+    rescue => e
+      puts "ERROR, #{e}"
+      body = ""
+    end
+
+      reply! room,  body
+      update_score room, body
+      reload! room, body
   end
 
   stream.on_error do |message|
