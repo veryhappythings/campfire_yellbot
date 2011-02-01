@@ -33,7 +33,7 @@ SCORE = {
   'wtf' => 0,
   'facepalm' =>0
 }
-def update_score message, room
+def update_score  room, message
   wat = message.downcase.match /^(wtf|facepalm)/i
   unless wat.nil?
     SCORE[wat.to_s] += 1
