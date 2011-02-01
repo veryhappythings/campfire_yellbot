@@ -34,9 +34,9 @@ SCORE = {
   'facepalm' =>0
 }
 def update_score  room, message
-  wat = message.downcase.match /^(wtf|facepalm)/i
+  wat = message.match /^(wtf|facepalm)/i
   unless wat.nil?
-    SCORE[wat.to_s] += 1
+    SCORE[wat.to_s.downcase] += 1
     room.speak "Since #{SCORE['started']} -> WTFs: #{SCORE['wtf']}, facepalms: #{SCORE['facepalm']}"
   end
 end
