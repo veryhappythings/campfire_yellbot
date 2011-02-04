@@ -69,7 +69,6 @@ def respond(room, reply)
 end
 
 options = {
-  :bot_user_id => CONFIG['bot_user_id'],
   :path => "/room/#{CONFIG['room_id']}/live.json",
   :host => 'streaming.campfirenow.com',
   :auth => "#{CONFIG['token']}:x"
@@ -99,7 +98,7 @@ EventMachine::run do
     end
 
     begin
-      if user_id != config[:bot_user_id]
+      if user_id != CONFIG['bot_user_id']
         reply! room,  body
         update_score room, body
         reload! room, body
