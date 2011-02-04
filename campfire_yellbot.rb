@@ -87,7 +87,7 @@ EventMachine::run do
   stream = Twitter::JSONStream.connect(options)
 
   stream.each_item do |item|
-    puts item
+    puts item.inspect
     begin
       body = JSON.parse(item)['body']
     rescue => e
@@ -95,14 +95,25 @@ EventMachine::run do
       body = ""
     end
 
+    begin
       reply! room,  body
       update_score room, body
       reload! room, body
+    rescue => e
+      puts "ERROR, ERRROR"
+      y e
+    end
   end
 
   stream.on_error do |message|
-    puts message
-    puts "ERROR:#{message.inspect}"
+    begin
+      puts message
+      puts "ERROR:#{message.inspect}"
+    rescue => e
+      puts "ERROR, ERRROR"
+      y e
+    end
+
   end
 
   stream.on_max_reconnects do |timeout, retries|
