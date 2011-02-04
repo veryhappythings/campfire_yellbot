@@ -99,7 +99,7 @@ EventMachine::run do
     end
 
     begin
-      if user_id != config['bot_user_id']
+      if user_id != config[:bot_user_id]
         reply! room,  body
         update_score room, body
         reload! room, body
