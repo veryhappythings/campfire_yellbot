@@ -69,6 +69,7 @@ def respond(room, reply)
 end
 
 options = {
+  :bot_user_id => CONFIG['bot_user_id'],
   :path => "/room/#{CONFIG['room_id']}/live.json",
   :host => 'streaming.campfirenow.com',
   :auth => "#{CONFIG['token']}:x"
@@ -87,18 +88,22 @@ EventMachine::run do
   stream = Twitter::JSONStream.connect(options)
 
   stream.each_item do |item|
-    puts item.inspect
+    puts item
     begin
-      body = JSON.parse(item)['body']
+      obj = JSON.parse(item)
+      body = obj['body']
+      user_id = obj['user_id']
     rescue => e
       puts "ERROR, #{e}"
       body = ""
     end
 
     begin
-      reply! room,  body
-      update_score room, body
-      reload! room, body
+      if user_id != config['bot_user_id']
+        reply! room,  body
+        update_score room, body
+        reload! room, body
+      end
     rescue => e
       puts "ERROR, ERRROR"
       y e
