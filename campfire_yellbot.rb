@@ -49,7 +49,7 @@ end
 def update_score  room, message
   return if message.nil? or not message.is_a? String
   wat = message.match /^(wtf|facepalm)/i
-  unless wat.nil?
+  unless wat.nil? or wat.to_s.nil?
     SCORE[wat.to_s.downcase] += 1
     room.speak "Since #{SCORE['started']} -> WTFs: #{SCORE['wtf']}, facepalms: #{SCORE['facepalm']}"
   end
