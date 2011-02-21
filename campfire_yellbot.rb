@@ -54,7 +54,7 @@ end
 def update_score  room, message
   return if message.nil? or not message.is_a? String
   wat = message.match /^(wtf|facepalm)/i
-  unless wat.nil?
+  unless wat.nil? or wat.to_s.nil?
     SCORE[wat.to_s.downcase] += 1
     room.speak "Since #{SCORE['started']} -> WTFs: #{SCORE['wtf']}, facepalms: #{SCORE['facepalm']}"
   end
@@ -95,20 +95,35 @@ EventMachine::run do
   stream.each_item do |item|
     puts item
     begin
-      body = JSON.parse(item)['body']
+      obj = JSON.parse(item)
+      body = obj['body']
+      user_id = obj['user_id']
     rescue => e
       puts "ERROR, #{e}"
       body = ""
     end
 
-      reply! room,  body
-      update_score room, body
-      reload! room, body
+    begin
+      if user_id != CONFIG['bot_user_id']
+        reply! room,  body
+        update_score room, body
+        reload! room, body
+      end
+    rescue => e
+      puts "ERROR, ERRROR"
+      y e
+    end
   end
 
   stream.on_error do |message|
-    puts message
-    puts "ERROR:#{message.inspect}"
+    begin
+      puts message
+      puts "ERROR:#{message.inspect}"
+    rescue => e
+      puts "ERROR, ERRROR"
+      y e
+    end
+
   end
 
   stream.on_max_reconnects do |timeout, retries|
