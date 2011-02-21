@@ -28,11 +28,16 @@ end
 CONFIG = YAML.load_file('config.yml')
 $replies = YAML.load_file('replies.yml')
 
-SCORE = {
-  'started' => Time.now,
-  'wtf' => 0,
-  'facepalm' =>0
-}
+begin
+  score = YAML::load_file('SCORE.yaml')
+rescue
+  score = {
+    'started' => Time.now,
+    'wtf' => 0,
+    'facepalm' =>0
+  }
+end
+SCORE = score
 
 def reload! room, message
   return if message.nil? or not message.is_a? String
@@ -53,6 +58,7 @@ def update_score  room, message
     SCORE[wat.to_s.downcase] += 1
     room.speak "Since #{SCORE['started']} -> WTFs: #{SCORE['wtf']}, facepalms: #{SCORE['facepalm']}"
   end
+  File.open('SCORE.yaml','w') { |f| YAML::dump(SCORE, f) }
 end
 def reply!(room, message)
   $replies.each_pair do |name, reply|
