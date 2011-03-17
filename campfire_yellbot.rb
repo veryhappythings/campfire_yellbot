@@ -4,37 +4,19 @@ require 'yaml'
 require 'broach'
 require 'twitter/json_stream'
 
-module Broach
-  class Session
-    def post_empty(path, payload)
-      response = REST.post(url_for(path), payload.to_json, headers_for(:post), credentials)
-      if response.created?
-        JSON.parse(response.body)
-      end
-    end
-  end
-
-  class Room
-    def join
-      Broach.session.post_empty("room/#{id.to_i}/join.xml", '')
-    end
-
-    def leave
-      Broach.session.post_empty("room/#{id.to_i}/leave.xml", '')
-    end
-  end
-end
+require 'broach_monkeypatch'
+require 'yellbot_meme_generator'
 
 CONFIG = YAML.load_file('config.yml')
 $replies = YAML.load_file('replies.yml')
-
+@meme_generator = YellbotMemeGenerator.new
 begin
   score = YAML::load_file('SCORE.yaml')
 rescue
   score = {
     'started' => Time.now,
     'wtf' => 0,
-    'facepalm' =>0
+    'facepalm' => 0
   }
 end
 SCORE = score
@@ -60,11 +42,15 @@ def update_score  room, message
   end
   File.open('SCORE.yaml','w') { |f| YAML::dump(SCORE, f) }
 end
-def reply!(room, message)
+
+def reply(room, message)
   $replies.each_pair do |name, reply|
     if Regexp.new(reply['regex'], Regexp::IGNORECASE).match(message)
       respond(room, reply)
     end
+  end
+  if @meme_generator.meme? message
+    respond(room, {'message' => [@meme_generator.reply(message)]})
   end
 end
 
@@ -105,7 +91,7 @@ EventMachine::run do
 
     begin
       if user_id != CONFIG['bot_user_id']
-        reply! room,  body
+        reply room,  body
         update_score room, body
         reload! room, body
       end
